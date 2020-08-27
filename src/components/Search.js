@@ -20,12 +20,34 @@ const Search = () => {
       setResults(data.query.search);
     };
 
-    search();
+    //First time
+    if (term && !results.length) {
+      search();
+    } else {
+      //Throttle. setTimeout return an "identifier". We can use this identifier to cancel the previous call
+      const timeoutId = setTimeout(() => {
+        if (term) {
+          search();
+        }
+      }, 500);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
   }, [term]);
 
   const renderedResults = results.map((result) => {
     return (
       <div key={result.pageid} className="item">
+        <div className="right floated content">
+          <a
+            className="ui button"
+            href={`https://en.wikipedia.org?curid=${result.pageid}`}
+          >
+            Go
+          </a>
+        </div>
         <div className="content">
           <div className="header">{result.title}</div>
           <span dangerouslySetInnerHTML={{ __html: result.snippet }}></span>

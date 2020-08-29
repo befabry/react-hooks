@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 function Dropdown({ options, selected, onSelectedChange }) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    //First the elements with addEventListener are called, before the bubbling occurs
+    document.body.addEventListener("click", () => {
+      setOpen(false);
+    });
+  }, []);
+
   const renderedOptions = options.map((option) => {
     if (option.value === selected.value) {
       return null;
@@ -21,10 +30,15 @@ function Dropdown({ options, selected, onSelectedChange }) {
     <div className="ui form">
       <div className="field">
         <label className="label">Select a Color</label>
-        <div className="ui selection dropdown visible active">
+        <div
+          onClick={() => setOpen(!open)}
+          className={`ui selection dropdown ${open ? "visible active" : ""}`}
+        >
           <i className="dropdown icon"></i>
           <div className="text">{selected.label}</div>
-          <div className="menu visible transition">{renderedOptions}</div>
+          <div className={`menu ${open ? "visible transition" : ""}`}>
+            {renderedOptions}
+          </div>
         </div>
       </div>
     </div>

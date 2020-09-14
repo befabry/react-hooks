@@ -3,7 +3,20 @@ import axios from "axios";
 
 const Convert = ({ language, text }) => {
   const [translated, setTranslated] = useState("");
+  const [debouncedText, setDebouncedText] = useState(text);
 
+  // #1 Manage the debounce
+  useEffect(() => {
+    const timerID = setTimeout(() => {
+      setDebouncedText(text);
+    }, 500);
+
+    return () => {
+      clearTimeout(timerID);
+    };
+  }, [text]);
+
+  // #2 After the debounce, call the API
   useEffect(() => {
     const doTranslation = async () => {
       const { data } = await axios.post(
@@ -11,7 +24,7 @@ const Convert = ({ language, text }) => {
         {},
         {
           params: {
-            q: text,
+            q: debouncedText,
             target: language.value,
             key: "AIzaSyCHUCmpR7cT_yDFHC98CZJy2LTms-IwDlM",
           },
@@ -22,7 +35,7 @@ const Convert = ({ language, text }) => {
     };
 
     doTranslation();
-  }, [language, text]);
+  }, [language, debouncedText]);
 
   return (
     <div>
